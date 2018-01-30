@@ -1,0 +1,54 @@
+{%- set cacert_file = salt['grains.filter_by']({
+        'Debian': '/etc/ssl/certs/ca-certificates.crt',
+        'RedHat': '/etc/pki/tls/certs/ca-bundle.crt'
+    })
+%}
+
+{% set common = pillar.manila.get('common', {}) %}
+
+{% set api = salt['grains.filter_by']({
+    'Common': common,
+    'Debian': {
+        'pkgs': ['manila-api'],
+        'engine': {
+          'name': 'eventlet'
+        },
+        'service': 'apache2',
+        'cacert_file': cacert_file,
+    }
+}, base='Common', merge=pillar.manila.get('api', {})) %}
+
+{% set scheduler = salt['grains.filter_by']({
+    'Common': common,
+    'Debian': {
+      'pkgs': ['manila-scheduler'],
+      'service': 'manila-scheduler',
+      'cacert_file': cacert_file,
+    }
+    
+}, base='Common', merge=pillar.manila.get('scheduler', {})) %}
+
+{% set data = salt['grains.filter_by']({
+    'Common': common,
+    'Debian': {
+        'pkgs': ['manila-data'],
+        'service': 'manila-data',
+        'cacert_file': cacert_file,
+    },
+}, base='Common', merge=pillar.manila.get('data', {})) %}
+
+{% set share = salt['grains.filter_by']({
+    'Common': common,
+    'Debian': {
+        'pkgs': ['manila-share'],
+        'service': 'manila-share',
+        'cacert_file': cacert_file,
+    },
+}, base='Common', merge=pillar.manila.get('share', {})) %}
+
+{% set client = salt['grains.filter_by']({
+    'Debian': {
+      'pkgs': ['python-manilaclient'],
+      'cacert_file': cacert_file,
+    },
+}, merge=pillar.manila.get('client', {})) %}
