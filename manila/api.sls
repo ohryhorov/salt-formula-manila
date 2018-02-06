@@ -20,13 +20,6 @@ manila_install_database:
     - watch:
       - file: /etc/manila/manila.conf
       - file: /etc/manila/policy.json
-    {%- if api.message_queue.get('ssl',{}).get('enabled', False) %}
-    # TODO add common _ssl state.
-      - file: rabbitmq_ca_manila_file
-    {%- endif %}
-    {%- if api.database.get('ssl',{}).get('enabled', False) %}
-      - file: mysql_ca_manila_file
-    {%- endif %}
 
 /etc/manila/policy.json:
   file.managed:

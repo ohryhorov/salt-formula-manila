@@ -4,10 +4,9 @@
     })
 %}
 
-{% set common = pillar.manila.get('common', {}) %}
+{% set cfg = pillar.manila.get('common', {}) %}
 
 {% set api = salt['grains.filter_by']({
-    'Common': common,
     'Debian': {
         'pkgs': ['manila-api'],
         'engine': {
@@ -16,35 +15,64 @@
         'service': 'apache2',
         'cacert_file': cacert_file,
     }
-}, base='Common', merge=pillar.manila.get('api', {})) %}
+}, merge=pillar.manila.get('api', {})) %}
+
+{%- if api.get('enabled', False) %}
+
+{% set cfg = salt['grains.filter_by']({
+    'default': cfg,
+}, default='default', merge=api) %}
+
+{%- endif %}
 
 {% set scheduler = salt['grains.filter_by']({
-    'Common': common,
     'Debian': {
       'pkgs': ['manila-scheduler'],
       'service': 'manila-scheduler',
       'cacert_file': cacert_file,
     }
     
-}, base='Common', merge=pillar.manila.get('scheduler', {})) %}
+}, merge=pillar.manila.get('scheduler', {})) %}
+
+{%- if scheduler.get('enabled', False) %}
+
+{% set cfg = salt['grains.filter_by']({
+    'default': cfg,
+}, default='default', merge=scheduler) %}
+
+{%- endif %}
 
 {% set data = salt['grains.filter_by']({
-    'Common': common,
     'Debian': {
         'pkgs': ['manila-data'],
         'service': 'manila-data',
         'cacert_file': cacert_file,
     },
-}, base='Common', merge=pillar.manila.get('data', {})) %}
+}, merge=pillar.manila.get('data', {})) %}
+
+{%- if data.get('enabled', False) %}
+
+{% set cfg = salt['grains.filter_by']({
+    'default': cfg,
+}, default='default', merge=data) %}
+
+{%- endif %}
 
 {% set share = salt['grains.filter_by']({
-    'Common': common,
     'Debian': {
         'pkgs': ['manila-share'],
         'service': 'manila-share',
         'cacert_file': cacert_file,
     },
-}, base='Common', merge=pillar.manila.get('share', {})) %}
+}, merge=pillar.manila.get('share', {})) %}
+
+{%- if share.get('enabled', False) %}
+
+{% set cfg = salt['grains.filter_by']({
+    'default': cfg,
+}, default='default', merge=share) %}
+
+{%- endif %}
 
 {% set client = salt['grains.filter_by']({
     'Debian': {
