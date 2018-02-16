@@ -41,7 +41,36 @@ Single manila service
       api:
         bind:
           host: 10.20.0.102
-
+      data:
+        version: pike
+        enabled: true
+      scheduler:
+        version: pike
+        enabled: true
+      share:
+        version: pike
+        enabled: true
+        enabled_share_backends:
+          lvm:
+            name: lvm
+            type: lvm
+            enabled: true
+            dhss: false
+            share_driver: manila.share.drivers.lvm.LVMShareDriver
+        shares:
+          Share2:
+            share_type:
+              share_type_name: lvm-type1
+              dhss: false
+              extra_specs:
+                snapshot_support: true
+            share_size: 5
+            share_proto: NFS
+            share_access:
+              rw:
+               - 10.20.1.101
+              ro:
+               - 10.20.2.101
 
 More information
 ================
